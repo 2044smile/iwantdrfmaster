@@ -1,6 +1,99 @@
 # iwantdrfmaster
 Until the day you become a DRF master ...
 
+# Basic
+> ## 직렬화 클래스 지정
+*  renderer_classes
+- default
+
+    - JSON 직렬화 : rest_framework.renders.JSONRenderer
+    - HTML 페이지 직렬화 : rest_framework.renderers.TemplateHTMLRenderer
+    
+> ## 비직렬화 클래스 지정
+
+- parser_classes
+- default
+
+    - JSON 포맷 처리 : rest_framework.parsers.JSONParser
+    - FormParser : rest_Framework.parsers.FormParser
+    
+> ## 인증 클래스 지정
+
+- authentication_classes
+- default
+    - 세션기반 인증 : rest_framework.authentication.SessionAuthentication
+    - HTTP basic 인증 : rest_framework.authentication.BasicAuthentication
+    
+> ## 사용량 제한 클래스 지정
+
+- throttle_classes
+- default
+    - 빈 튜플
+    
+> ## 권한 클래스 지정
+
+- permission_classes
+- default
+    - 누구라도 접근 허용 : rest_framework.permissions.AllowAny
+    
+> ## 그 외
+
+- 요청에 따라 적절한 직렬화/비직렬화 선택 (JSON, XML . . .)
+- 요청 내역에서 API 버전 정보를 탐지할 클래스 지정
+
+
+JSON 직렬화 : rest_framework.renderers.JSONRenderer
+HTML 페이지 직렬화 : rest_framework.renderers.TemplateHTMLRenderer
+비직렬화 클래스 지정
+
+parser_classes
+
+default
+
+JSON 포맷 처리 : rest_framework.parsers.JSONParser
+FormParser : rest_framework.parsers.FormParser
+MultiPartParser : rest_framework.parsers.MultiPartParser
+인증 클래스 지정
+
+authentication_classes
+
+default
+
+세션기반인증 : rest_framework.authentication.SessionAuthentication
+HTTP basic 인증 : rest_framework.authentication.BasicAuthentication
+사용량 제한 클래스 지정
+
+throttle_classes
+
+default
+
+빈 튜플
+권한 클래스 지정
+
+permission_classes
+
+default
+
+누구라도 접근 허용 : rest_framework.permissions.AllowAny
+요청에 따라 적절한 직렬화/비직렬화 선택
+
+content_negotiation_class
+
+같은 URL 요청에 대해서 JSON 응답을 할 지, HTML 응답을 할 지 판단
+
+default
+
+rest_framework.negotiation.DefaultContentNegotiation
+요청 내역에서 API 버전 정보를 탐지할 클래스 지정
+
+versioning_class
+
+요청 URL의 HEADER에서 버전 정보를 탐지하여 맞는 버전을 호출
+
+default
+
+버전 정보를 탐지하지 않습니다. : None
+
 # View
 
 # APIView
