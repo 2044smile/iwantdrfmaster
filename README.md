@@ -5,12 +5,13 @@ Until the day you become a DRF master ...
 
 # APIView
 
-class PostListAPIView(APIView):
+
   
 List를 보거나(GET), 생성하는(POST) API View 
 
 [!] api/post/
-
+```
+class PostListAPIView(APIView):
     def get(self, request):
         serializer = PostListSerializer(Post.objects.all(), many=True)
         return Response(status=status.HTTP_200_OK, data=serializer.data)
@@ -21,12 +22,13 @@ List를 보거나(GET), 생성하는(POST) API View
             serializer.save()  # 검증이 완료되었다면 DB에 생성한다.
             return Response(status=status.HTTP_201_CREATED, data=serializer.data)
         return Response(status=status.HTTP_400_BAD_REQUEST, data=serializer.errors)
+```
 
+포스트 내용, 수정, 삭제 
 
-포스트 내용 수정 삭제 
+[!] api/post/<<int:pk>>/
 
-[!] api/post/<int:pk>/
-
+```
 class PostDetailAPIView(APIView):
 
     def get_object(self, pk):
@@ -54,5 +56,5 @@ class PostDetailAPIView(APIView):
         post = self.get_object(pk)
         post.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
-
+```
 # ViewSet
