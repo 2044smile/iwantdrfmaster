@@ -97,7 +97,7 @@ class PostDetailAPIView(APIView):
         post.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 ```
-# ViewSet
+# Custom View
 
 ```python
 from rest_framework import viewsets
@@ -165,5 +165,55 @@ class PostListMixins(mixins.ListModelMixin,
 
     def post(self, request, *args, **kwargs):
         return self.create(request)
+
+```
+
+> Generics APIView
+* Mixin을 상속함으로서 반복되는 내용을 많이 줄일 수 있었습니다. 하지만 여러 개를 상속해야 하다보니 가독성이 떨어집니다.
+다행히도 rest_framework 에서는 저들을 상속한 새로운 클래스를 정의해놨습니다.
+
+* generics.CreateAPIview: 생성
+* generics.ListAPIView: 목록
+* generics.RetrieveAPIView: 조회
+* generics.DestroyAPIView: 삭제
+* generics.UpdateAPIView: 수정
+* generics.RetrieveUpdateAPIView: 조회/수정
+* generics.RetrieveDestroyAPIView: 조회/삭제
+* generics.ListCreateAPIView: 목록/생성
+* generics.RetrieveUpdateDestroyAPIView: 조회/생성/삭제
+
+```python
+from rest_framework import generics
+from posts.models import Post
+from posts.serializers import PostListSerializer
+
+
+class PostListGenericAPiView(generics.ListCreateAPIView):  # Create, List
+    queryset = Post.objects.all()
+    serializer_class = PostListSerializer
+
+
+class PostDetailGenericAPIView(generics.RetrieveUpdateDestroyAPIView):  # Update, Delete
+    queryset = Post.objects.all()
+    serializer_class = PostListSerializer
+
+```
+
+# ViewSet
+* 마지막으로 알아볼 ViewSet입니다. generics APIView를 통해서 코드를 많이 간소화 하였지만 아직 queryset과 serializer_class가 공통적인데도 불구하고
+따로 기재해주어야 합니다. 이를 한번에 처리해주는게 ViewSet 입니다.
+* ViewSet은 CBV가 아닌 헬퍼클래스로 두 가지 종류가 있습니다.
+    1. viewsets.ReadOnlyModelViewSet: 목록 조회, 특정 레코드 조회
+    2. viewsets.ModelViewSet: 목록 조회, 특정 레코드 생성/조회/수정/삭제
+* ViewSet은 url 등록 시 Router로 편리하게 URL을 관리할 수 있습니다.
+```python
+from posts.models import Post
+from posts.serializers import PostListSerializer
+from rest_framework import viewsets
+
+
+class PostViewSet(viewsets.ModelViewSet):  # create, list, update, delete
+    queryset = Post.objects.all()
+    serializer_class = PostListSerializer
 
 ```
