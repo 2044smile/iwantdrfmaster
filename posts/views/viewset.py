@@ -3,6 +3,6 @@ from posts.serializers import PostListSerializer
 from rest_framework import viewsets
 
 
-class PostViewSet(viewsets.ModelViewSet):  # create, list, update, delete
+class PostViewSet(viewsets.ModelViewSet):
     queryset = Post.objects.all()
     serializer_class = PostListSerializer

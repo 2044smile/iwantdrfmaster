@@ -10,9 +10,6 @@ class PostListMixins(mixins.ListModelMixin,
     queryset = Post.objects.all()
     serializer_class = PostListSerializer
 
-    def get_queryset(self):
-        return Post.objects.filter(user=self.request.user)
-
     def get(self, request, *args, **kwargs):
         return self.list(request)
 

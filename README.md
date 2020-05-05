@@ -156,10 +156,6 @@ class PostListMixins(mixins.ListModelMixin,
         queryset = Post.objects.filter(pk=3)
         return queryset
     
-    # 접속한 유저의 object를 리턴해주고 싶을 때도 사용할 수 있다.     
-    def get_queryset(self):
-        return Post.objects.filter(user=self.request.user)
-
     def get(self, request, *args, **kwargs):
         return self.list(request)
 
@@ -172,7 +168,7 @@ class PostListMixins(mixins.ListModelMixin,
 * Mixin을 상속함으로서 반복되는 내용을 많이 줄일 수 있었습니다. 하지만 여러 개를 상속해야 하다보니 가독성이 떨어집니다.
 다행히도 rest_framework 에서는 저들을 상속한 새로운 클래스를 정의해놨습니다.
 
-* generics.CreateAPIview: 생성
+* generics.CreateAPIView: 생성
 * generics.ListAPIView: 목록
 * generics.RetrieveAPIView: 조회
 * generics.DestroyAPIView: 삭제
@@ -197,6 +193,17 @@ class PostDetailGenericAPIView(generics.RetrieveUpdateDestroyAPIView):  # Update
     queryset = Post.objects.all()
     serializer_class = PostListSerializer
 
+
+# generics.ListCreateAPIView의 동작은 아래와 같다.
+class POstListGenericAPIView(generics.ListCreateAPIView):)
+    queryset = Post.objects.all()
+    serializer_class = PostListSerializer
+
+    def list(self, request):
+        queryset = self.get_queryset # 위의 queryset을 가져온다.
+        serializer = PostListSerializer(queryset, many=True)
+        return Response(serializer.data)
+
 ```
 
 # ViewSet
@@ -206,6 +213,7 @@ class PostDetailGenericAPIView(generics.RetrieveUpdateDestroyAPIView):  # Update
     1. viewsets.ReadOnlyModelViewSet: 목록 조회, 특정 레코드 조회
     2. viewsets.ModelViewSet: 목록 조회, 특정 레코드 생성/조회/수정/삭제
 * ViewSet은 url 등록 시 Router로 편리하게 URL을 관리할 수 있습니다.
+* 아래코드를 보면 별 기능이 없어보여도 해당 엔드포인트로 CRUD를 사용할 수 있습니다.
 ```python
 from posts.models import Post
 from posts.serializers import PostListSerializer
@@ -217,3 +225,36 @@ class PostViewSet(viewsets.ModelViewSet):  # create, list, update, delete
     serializer_class = PostListSerializer
 
 ```
+
+# Test
+> perform_create
+* perform_create 메소드를 알아보기 전에 create가 어떻게 동작하는지 알아보겠습니다.
+```python
+# viewsets.py
+def create(self, request, *args, **kwargs):
+    super().create(request, *args, **kwargs)
+
+# 위 메서드를 호출하면 아래의 CreateModelMixin을 거치게 됩니다.
+
+class CreateModelMixin:
+    """
+    Create a model instance.
+    """
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)  # request의 data attribute를 가져옴
+        # request.data에는 HTTP Multi Part Form으로 전송된 POST 필드값과 File들이 저장되어 있습니다.
+        serializer.is_valid(raise_exception=True)  # Serializer를 통해 유효성 검사
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
+    def perform_create(self, serializer):
+        serializer.save()
+
+    def get_success_headers(self, data):
+        try:
+            return {'Location': str(data[api_settings.URL_FIELD_NAME])}
+        except (TypeError, KeyError):
+            return {}
+```
+* 따라서 이것을 토대로 Create Model Mixin을 변경하면 기본적으로 제공하는 여러 절차들을 수행하면서도 커스텀된 POST 데이터 값을 넣을 수 있습니다.
