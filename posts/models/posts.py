@@ -3,7 +3,7 @@ from django.db import models
 from .common import *
 
 
-class Post(BaseModel):
+class Post(models.Model):
     title = models.CharField(
         max_length=128
     )
@@ -12,4 +12,4 @@ class Post(BaseModel):
     )
 
     def __str__(self):
-        return f'{self.title}_{self.created_at}'
+        return f'{self.title}'
