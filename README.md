@@ -9,6 +9,7 @@ Until the day you become a DRF master ...
 > ## 직렬화 클래스 지정
 *  renderer_classes
 - default
+- Docker
 
     - JSON 직렬화 : rest_framework.renders.JSONRenderer
     - HTML 페이지 직렬화 : rest_framework.renderers.TemplateHTMLRenderer
