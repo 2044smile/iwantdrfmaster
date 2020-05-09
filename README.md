@@ -1,6 +1,10 @@
 # iwantdrfmaster
 Until the day you become a DRF master ...
 
+그 외 테스트하고 싶은 것을 테스트하는 레포입니다.
+* Django-redis-cache
+* Git Action Django
+
 # Basic
 > ## 직렬화 클래스 지정
 *  renderer_classes
